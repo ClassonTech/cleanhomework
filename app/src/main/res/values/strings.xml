@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">cleanhomework</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="btnNextPageText">Next Page</string>
+    <string name="btnNewButton">New Folder</string>
+    <string name="cancel">Cancel</string>
+    <string name="create">Create Folder</string>
+    <string name="create_button_dialog_title">New Folder</string>
+    <string name="create_button_dialog_name">Folder name</string>
+</resources>
