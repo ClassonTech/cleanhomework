@@ -1,74 +1,62 @@
 package net.classon.www.cleanhomework;
+import java.util.List;
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class CustomAdapter extends BaseAdapter{
-
-    String [] result;
-    Context context;
-    int [] imageId;
-    private static LayoutInflater inflater=null;
-    public CustomAdapter(MainActivity mainActivity, String[] prgmNameList) {
-        // TODO Auto-generated constructor stub
-        result=prgmNameList;
-        context=mainActivity;
-        inflater = ( LayoutInflater )context.
-                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+public class CustomAdapter extends BaseAdapter {
+    private Activity mContext;
+    private List<String> mList;
+    private LayoutInflater mLayoutInflater = null;
+    public CustomAdapter(Activity context, List<String> list) {
+        mContext = context;
+        mList = list;
+        mLayoutInflater = (LayoutInflater) mContext
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
-
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
-        return result.length;
+        return mList.size();
     }
-
     @Override
-    public Object getItem(int position) {
-        // TODO Auto-generated method stub
-        return position;
+    public Object getItem(int pos) {
+        return mList.get(pos);
     }
-
     @Override
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
         return position;
     }
-
-    public class Holder
-    {
-        TextView tv;
-        ImageView img;
-    }
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
-        Holder holder=new Holder();
-        View rowView;
-
-        rowView = inflater.inflate(R.layout.organizer_button, null);
-        holder.tv=(TextView) rowView.findViewById(R.id.label);
-
-        holder.tv.setText(result[position]);
-        holder.img.setImageResource(imageId[position]);
-
-        rowView.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                Toast.makeText(context, "You Clicked "+result[position], Toast.LENGTH_LONG).show();
-            }
-        });
-
-        return rowView;
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View v = convertView;
+        CompleteListViewHolder viewHolder;
+        if (convertView == null) {
+            LayoutInflater li = (LayoutInflater) mContext
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            v = li.inflate(R.layout.organizer_button, null);
+            viewHolder = new CompleteListViewHolder(v);
+            v.setTag(viewHolder);
+        } else {
+            viewHolder = (CompleteListViewHolder) v.getTag();
+        }
+        viewHolder.mTVItem.setText(mList.get(position));
+        return v;
     }
 
+    public void changeName(int pos){
+        View v = getView(pos, null, null);
+        //v.CompleteListViewHolder
+    }
+
+}
+
+class CompleteListViewHolder {
+    public TextView mTVItem;
+    public CompleteListViewHolder(View base) {
+        mTVItem = (TextView) base.findViewById(R.id.label);
+    }
 }
