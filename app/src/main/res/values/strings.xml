@@ -9,4 +9,5 @@
     <string name="create">Create Folder</string>
     <string name="create_button_dialog_title">New Folder</string>
     <string name="create_button_dialog_name">Folder name</string>
+    <string name="title_activity_custom_camera">CustomCameraActivity</string>
 </resources>

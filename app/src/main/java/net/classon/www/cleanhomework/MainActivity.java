@@ -6,9 +6,12 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,8 +22,10 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,8 +39,7 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
     private ArrayList itemList;
     private CustomAdapter gridAdapter;
     private int temp;
-    //public static String [] prgmNameList;
-
+    private static final String ROOT = "cleanhomework";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,20 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
         //settings.getStringSet("folderNames",null).toArray(prgmNameList);
 
         itemList = new ArrayList<String>();
-        itemList.add("New Folder");
+
+        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + File.separator + ROOT);
+        if (!f.exists()) {
+            if (!f.mkdirs()) {
+                //Couldn't make ROOT directory for app, on first install
+            }
+        }
+
+        String[] arr = f.list();
+            for(String str: arr){
+                itemList.add(str); //Creates a GridView based on albums in the pictures folder... possibly problematic
+            }
+        if(itemList.size()==0){itemList.add("New Folder");} //On first install, before first picture, always created
+
         gridview = (GridView) findViewById(R.id.gridview);
         newBtn = (Button) findViewById(R.id.btnNewButton);
         newBtn.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +82,16 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
                 temp = pos;
                 createButton(arg1);
                 return true;
+            }
+        });
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1,
+                                    int pos, long id) {
+                Intent intent = new Intent(MainActivity.this.getApplicationContext(), CustomCameraActivity.class);
+                String name = ROOT+"/"+((TextView) arg1.findViewById(R.id.label)).getText().toString();
+                intent.putExtra("EXTRA_NAME", name);
+                startActivity(intent);
             }
         });
         gridview.setAdapter(gridAdapter);
@@ -115,13 +142,14 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
     }
 
     @Override
-    public void onFinishUserDialog(String str, int i) {
+    public void onFinishUserDialog(String str, int i) { //i = 0, create new folder "str". i = 1, edit folder name "temp" to "str"
         if(i==0){
             itemList.add(str);
             gridAdapter.notifyDataSetChanged();
         } else if(i==1){
-            itemList.set(temp, str);
+            File from = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + File.separator + ROOT + File.separator + temp);
+            File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + File.separator + ROOT + File.separator + str);
+            from.renameTo(to);
         }
-        //Toast.makeText(this, "Hello, " + user, Toast.LENGTH_SHORT).show();
     }
 }
