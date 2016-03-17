@@ -18,18 +18,23 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class CustomCameraActivity extends Activity {
+    private static final String ROOT = "cleanhomework";
+
     private Camera mCamera;
     private CameraPreview mCameraPreview;
-    private String folderName;
+    private String currentFolder;
+    private ArrayList<File> images;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_camera);
+
         mCamera = getCameraInstance();
         mCameraPreview = new CameraPreview(this, mCamera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
@@ -46,12 +51,15 @@ public class CustomCameraActivity extends Activity {
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras == null) {
-                folderName= null;
+                images= null;
+                currentFolder = null;
             } else {
-                folderName= extras.getString("EXTRA_NAME");
+                images = (ArrayList<File>)extras.get("EXTRA_FILES");
+                currentFolder = extras.getString("EXTRA_NAME");
             }
         } else {
-            folderName= (String) savedInstanceState.getSerializable("EXTRA_NAME");
+            images= (ArrayList<File>) savedInstanceState.getSerializable("EXTRA_FILES");
+            currentFolder = savedInstanceState.getSerializable("EXTRA_NAME").toString();
         }
     }
 
@@ -74,7 +82,7 @@ public class CustomCameraActivity extends Activity {
     Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            File pictureFile = getOutputMediaFile(folderName);
+            File pictureFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + File.separator + ROOT + File.separator + currentFolder);
             if (pictureFile == null) {
                 return;
             }
@@ -86,10 +94,11 @@ public class CustomCameraActivity extends Activity {
 
             } catch (IOException e) {
             }
-            Intent intent = new Intent(CustomCameraActivity.this.getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(CustomCameraActivity.this.getApplicationContext(), CustomGalleryActivity.class);
 
             //String message = editText.getText().toString();
-            //intent.putExtra(EXTRA_MESSAGE, message);
+            intent.putExtra("EXTRA_NAME", currentFolder);
+            intent.putExtra("EXTRA_FILES", images); //prob inefficient
             startActivity(intent);
         }
     };

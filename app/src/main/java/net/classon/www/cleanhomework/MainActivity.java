@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class MainActivity extends Activity implements CreateDialogFragment.UserNameListener, EditDialogFragment.UserNameListener {
+public class MainActivity extends Activity implements CreateDialogFragment.DialogListener, EditDialogFragment.DialogListener {
 
     public static final String PREFS_NAME = "MyPrefsFile";
 
@@ -38,7 +38,7 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
     private Button newBtn;
     private ArrayList itemList;
     private CustomAdapter gridAdapter;
-    private int temp;
+    private String temp;
     private static final String ROOT = "cleanhomework";
 
     @Override
@@ -53,17 +53,8 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
 
         itemList = new ArrayList<String>();
 
-        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + File.separator + ROOT);
-        if (!f.exists()) {
-            if (!f.mkdirs()) {
-                //Couldn't make ROOT directory for app, on first install
-            }
-        }
+        refreshList();
 
-        String[] arr = f.list();
-            for(String str: arr){
-                itemList.add(str); //Creates a GridView based on albums in the pictures folder... possibly problematic
-            }
         if(itemList.size()==0){itemList.add("New Folder");} //On first install, before first picture, always created
 
         gridview = (GridView) findViewById(R.id.gridview);
@@ -79,7 +70,7 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                            int pos, long id) {
-                temp = pos;
+                temp = ((TextView)arg1.findViewById(R.id.label)).getText().toString();
                 createButton(arg1);
                 return true;
             }
@@ -88,9 +79,16 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1,
                                     int pos, long id) {
-                Intent intent = new Intent(MainActivity.this.getApplicationContext(), CustomCameraActivity.class);
-                String name = ROOT+"/"+((TextView) arg1.findViewById(R.id.label)).getText().toString();
+                //Intent intent = new Intent(MainActivity.this.getApplicationContext(), CustomCameraActivity.class);
+                String name = ((TextView) arg1.findViewById(R.id.label)).getText().toString();
+                Intent intent = new Intent(MainActivity.this.getApplicationContext(), CustomGalleryActivity.class);
+                File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + File.separator + ROOT + File.separator + name);
+                ArrayList<File> images = new ArrayList<File>();
+                for(File i : f.listFiles()){
+                    images.add(i);
+                }
                 intent.putExtra("EXTRA_NAME", name);
+                intent.putExtra("EXTRA_FILES", images); //prob inefficient
                 startActivity(intent);
             }
         });
@@ -137,8 +135,19 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
         gridAdapter.notifyDataSetChanged();
     }
 
-    public void editFolder(View v) {
+    public void refreshList() {
+        itemList.clear();
+        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + File.separator + ROOT);
+        if (!f.exists()) {
+            if (!f.mkdirs()) {
+                //Couldn't make ROOT directory for app, on first install
+            }
+        }
 
+        String[] arr = f.list();
+        for(String str: arr){
+            itemList.add(str); //Creates a GridView based on albums in the pictures folder... possibly problematic
+        }
     }
 
     @Override
@@ -150,6 +159,8 @@ public class MainActivity extends Activity implements CreateDialogFragment.UserN
             File from = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + File.separator + ROOT + File.separator + temp);
             File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + File.separator + ROOT + File.separator + str);
             from.renameTo(to);
+            refreshList();
+            gridAdapter.notifyDataSetChanged();
         }
     }
 }

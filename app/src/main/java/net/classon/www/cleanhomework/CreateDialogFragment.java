@@ -20,7 +20,7 @@ public class CreateDialogFragment extends DialogFragment {
     private Button createButton;
 
 
-    public interface UserNameListener {
+    public interface DialogListener {
         void onFinishUserDialog(String user, int i);
     }
 
@@ -37,7 +37,7 @@ public class CreateDialogFragment extends DialogFragment {
         createButton = (Button) view.findViewById(R.id.createButton);
         createButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                UserNameListener activity = (UserNameListener) getActivity();
+                DialogListener activity = (DialogListener) getActivity();
                 String var = mEditText.getText().toString();
                 activity.onFinishUserDialog(mEditText.getText().toString(),0);
                 dismiss();

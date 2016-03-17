@@ -10,4 +10,8 @@
     <string name="create_button_dialog_title">New Folder</string>
     <string name="create_button_dialog_name">Folder name</string>
     <string name="title_activity_custom_camera">CustomCameraActivity</string>
+    <string name="picture">Picture</string>
+    <string name="select_intro">Long-press a thumbnail to add an image</string>
+    <string name="show_intro">Press a thumbnail to display at larger size</string>
+
 </resources>
