@@ -123,14 +123,12 @@ public class CustomGalleryActivity extends Activity {
                 ArrayList<Bitmap> temp = new ArrayList<Bitmap>();
                 temp.set(i, null);
 
-                if(i == mList.size()-1) {
-                    temp.add(0, placeholder);
-                }
                 Bitmap bm = BitmapFactory.decodeFile(mList.get(i).toString()); //stringy
                 temp.set(i, bm);
 
                 imageBitmaps = temp;
             }
+            imageBitmaps.add(0, placeholder);
 
             TypedArray styleAttrs = galleryContext.obtainStyledAttributes(R.styleable.PicGallery);
             defaultItemBackground = styleAttrs.getResourceId(R.styleable.PicGallery_android_galleryItemBackground, 0);
