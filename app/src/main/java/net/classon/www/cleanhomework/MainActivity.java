@@ -87,8 +87,8 @@ public class MainActivity extends Activity implements CreateDialogFragment.Dialo
                 for(File i : f.listFiles()){
                     images.add(i);
                 }
-                intent.putExtra("EXTRA_NAME", name);
-                intent.putExtra("EXTRA_FILES", images); //prob inefficient
+                //intent.putExtra("EXTRA_NAME", name);
+                //intent.putExtra("EXTRA_FILES", images); //prob inefficient
                 startActivity(intent);
             }
         });
@@ -144,9 +144,11 @@ public class MainActivity extends Activity implements CreateDialogFragment.Dialo
             }
         }
 
-        String[] arr = f.list();
-        for(String str: arr){
-            itemList.add(str); //Creates a GridView based on albums in the pictures folder... possibly problematic
+        if(f.list() != null ) {
+            String[] arr = f.list();
+            for (String str : arr) {
+                itemList.add(str); //Creates a GridView based on albums in the pictures folder... possibly problematic
+            }
         }
     }
 
